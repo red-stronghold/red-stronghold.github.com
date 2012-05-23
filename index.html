@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>SubstituteApp by red-stronghold</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>SubstituteApp</h1>
+        <p></p>
+        <p class="view"><a href="https://github.com/red-stronghold/SubstituteApp">SubstituteApp on GitHub <small>red-stronghold/SubstituteApp</small></a></p>
+        <ul>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp">View On <strong>GitHub</strong></a></li>
+        </ul>
+        <h2>Add ons</h2>
+        <h3>SubstituteApp.EPiServer</h3>
+        <p></p>
+        <p class="view"><a href="https://github.com/red-stronghold/SubstituteApp.EPiServer">SubstituteApp.EPiServer on GitHub <small>red-stronghold/SubstituteApp.EPiServer</small></a></p>
+        <ul>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.EPiServer/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.EPiServer/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.EPiServer">View On <strong>GitHub</strong></a></li>
+        </ul>
+
+        <h3>SubstituteApp.Robots</h3>
+        <p></p>
+        <p class="view"><a href="https://github.com/red-stronghold/SubstituteApp.Robots">SubstituteApp.Robots on GitHub <small>red-stronghold/SubstituteApp.Robots</small></a></p>
+        <ul>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.Robots/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.Robots/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/red-stronghold/SubstituteApp.Robots">View On <strong>GitHub</strong></a></li>
+        </ul>
+
+      </header>
+      <section>
+        <h2>Project page</h2>
+        <p><strong>Substitution of any config, text or code file before compilation.</strong> Support of different substitutions based on build flavor (i.e. Debug, Release etc.)</p>
+
+<p>Perfect for <strong>generation of complete sites</strong> including all neccesary files.</p>
+<p>Enables you to put <strong>environment specific values under source control</strong>.</p>
+
+<h3>Available on the official NuGet feed</h3>
+<p>SubstituteApp and all add ons are available on the <a href="https://www.nuget.org/packages?q=SubstituteApp">official NuGet feed</a><br/>
+Use the NuGet to get a quick start. Basic setup are included in the package installer.<br/><br/>
+NOTE: For the moment I dont have a working uninstall-script, so you have to remove some files and delete the pre-buildevent manually if you want to uninstall the NuGet package.
+</p>
+
+<h4>Usage</h4>
+<p>
+<ol>
+<li>Create a file with the same name as the file you want to make substitutions in. 
+But add an additional extension, same file extension as the file you want to generate. <br/>
+I.e. <code>web.config.config</code>, <code>robots.txt.txt</code> or <code>crossdomain.xml.xml</code>
+</li>
+<li>Create a file with your substitutions. Name it whatever you want, but it will contain XML-data so a XML-file would be just fine. I.e. "web.config.substitute.xml"
+<ul><li>Format the XML-file as the ""XML-Format - Substitution" section below)</li></ul></li>
+<li>Add the <code>SubstituteApp.exe</code> to you project. The "Libraries"-folder (or "External" etc.) could be a suitable place.</li>
+<li>Add a <code>SubstituteApp.config.xml</code> to your project and populate it with the XML according to the "XML-Format - Config"-section below</li>
+<li>Add a line to your pre-build event, in your project.
+		I.e. <code>$(SolutionDir)Libraries\SubstituteApp\SubstituteApp.exe $(ConfigurationName) SubstituteApp.config.xml $(ProjectDir)</code>
+		The example shows when the <code>SubstituteApp.exe</code> is located in folder <code>\Libraries\SubstituteApp\</code></li>
+<li>		Exclude the result file from Source Control (NOT exclude from project).<br/>
+		In VS2010 using TFS:	
+		<ul>
+		<li>Mark the file by clicking on it</li>
+		<li>Go to: File->Source Control->Exclude 'YourFile' from Source Control</li>
+		</ul>
+</li>
+</ol>
+</p>
+<h4>Parameters</h4>
+<p>
+<ol>
+<li>Build flavor name (use <code>$(ConfigurationName)</code>)</li>
+<li>Path to <code>SubstituteApp.config.xml</code>, relative to project root folder.</li>
+<li>Path to your project (use <code>$(ProjectDir)</code>)</li>
+<li>	If path (3.) contains whitespaces the app will believe additional parameters are sent in. These will be concaternated in the app with a whitespace between.</li>
+</ol>
+</p>
+<h4>What happens</h4>
+<p>The app search the template file for keys and substitutes them with the value defined in the substitution-xml-file. The app also remove the readonly attribute of the target file. In order to be able to write to it.</p>
+
+<h4>XML-Format - Config</h4>
+<p>
+<ul>
+<li>Root node: <code>&lt;substitutes&gt;</code></li>
+<li>Child nodes: <code>&lt;substitute&gt;</code> containing three nodes. <br/>
+Optional attribute 'name' is added for nuget transformation support.
+<ul>
+	<li><code>&lt;templatefile&gt;</code></li>
+	<li><code>&lt;substitutefile&gt;</code></li>
+	<li><code>&lt;resultfile&gt;</code></li>
+</ul>
+each containing the relative path (from projectroot) to given file.<br/>
+</li>
+</ul>
+Example:
+<pre><code>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;substitutes&gt;
+ &lt;substitute name="web.config"&gt;
+  &lt;templatefile&gt;web.config.config&lt;/templatefile&gt;
+  &lt;substitutefile&gt;web.config.substitute.xml&lt;/substitutefile&gt;
+  &lt;resultfile&gt;web.config&lt;/resultfile&gt;
+ &lt;/substitute&gt;
+&lt;/substitutes&gt;
+
+</code></pre>
+</p>
+<h4>XML-Format - Substitution</h4>
+<p>
+<ul>
+<li>Root node: <code>&lt;substitution&gt;</code></li>
+<li>One <code>&lt;configuration&gt;</code> node for each build flavor you want to use. Attribute <code>name</code>.</li>
+<li>X number of <code>&lt;item&gt;</code> nodes under each <code>&lt;configuration&gt;</code> node.
+	<ul>
+	<li>Attribute: <code>key</code>, the key to find and substitute.</li>
+	<li>InnerXml: the value of found key after substitution</li>
+	</ul>
+</li>
+<li>Each <code>&lt;configuration&gt;</code> node needs the same amount of <code>&lt;item&gt;</code> nodes. Else the substitution will fail.</li>
+<li>It is possible to have subtrees instead of values in the inner xml. The subtree may however lose the xml-formatting.</li>
+</ul>
+
+Example:
+<pre><code>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;substitution&gt;
+  &lt;configuration name="Debug"&gt;
+    &lt;item key="Key1"&gt;Value1&lt;/item&gt;
+    &lt;item key="Key2"&gt;Value2&lt;/item&gt;
+  &lt;/configuration&gt;
+  &lt;configuration name="Release"&gt;
+    &lt;item key="Key1"&gt;Value3&lt;/item&gt;
+    &lt;item key="Key2"&gt;Value4&lt;/item&gt;
+  &lt;/configuration&gt;
+&lt;/substitution&gt;
+</code></pre>
+</p>
+<h4>Errors</h4>
+<p>
+The app will fail if...
+<ul>
+<li>...it isn't invoked with 3 (or more) parameters.<br/>
+	An error will be found in the build log.
+</li>
+<li>
+...the substitution file doesn't have a configuration node for the given configuration.<br/>
+	An error will be found in the build log and the the same error will be written to the result file.
+</li>
+<li>
+...the substitution file doesn't have the same amount of item nodes whitin each configuration node.<br/>
+	An error will be found in the build log and the the same error will be written to the result file.
+</li>
+</ul>
+</p>
+      <div style="display:none;">
+        <h3>Welcome to GitHub Pages.</h3>
+
+<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+
+<pre><code>$ cd your_repo_root/repo_name
+$ git fetch origin
+$ git checkout gh-pages
+</code></pre>
+
+<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+
+<h3>Designer Templates</h3>
+
+<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+
+<h3>Rather Drive Stick?</h3>
+
+<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+
+<h3>Authors and Contributors</h3>
+
+<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+
+<h3>Support or Contact</h3>
+
+<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+      </div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/red-stronghold">red-stronghold</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
